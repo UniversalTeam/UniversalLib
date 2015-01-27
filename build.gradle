@@ -1,0 +1,103 @@
+buildscript {
+    repositories {
+        mavenCentral()
+        maven {
+            name = "forge"
+            url = "http://files.minecraftforge.net/maven"
+        }
+        maven {
+            name = "sonatype"
+            url = "https://oss.sonatype.org/content/repositories/snapshots/"
+        }
+    }
+    dependencies {
+        classpath 'net.minecraftforge.gradle:ForgeGradle:1.2-SNAPSHOT'
+    }
+}
+
+apply plugin: 'forge'
+apply plugin: 'maven'
+apply plugin: 'maven-publish'
+
+ext.configFile = file "build.properties"
+
+configFile.withReader {
+    def prop = new Properties()
+    prop.load(it)
+    project.ext.config = new ConfigSlurper().parse prop
+}
+
+version = "${config.version.mod}"
+group= "universalteam"
+archivesBaseName = "UniversalLib"
+
+if (System.getenv().BUILD_NUMBER != null) {
+    version += ".${System.getenv().BUILD_NUMBER}"
+}
+
+minecraft {
+    version = "${config.version.minecraft}-${config.version.forge}"
+    runDir = "run"
+    mappings = "snapshot_nodoc_20141130"
+}
+
+jar {
+	 classifier = 'universal'
+}
+
+task devJar(type: Jar) {
+    from sourceSets.main.output
+    classifier = 'dev'
+}
+
+task sourceJar(type: Jar) {
+    from sourceSets.main.java
+    classifier = 'src'
+}
+
+artifacts {
+	archives sourceJar
+	archives devJar
+}
+
+uploadArchives {
+	repositories {
+		mavenDeployer {
+			repository(url: "file:///var/www/maven/")
+			pom {
+				groupId = "universalteam"
+				version = project.version
+				artifactId = project.archivesBaseName
+				project {
+					name project.archivesBaseName
+					packaging 'jar'
+					description 'UniversalLib'
+					url 'https://github.com/UniversalTeam/UniversalLib'
+					scm {
+						url 'https://github.com/amadornes/Framez'
+						connection 'scm:git:git@github.com:UniversalTeam/UniversalLib.git'
+						developerConnection 'scm:git:git@github.com:UniversalTeam/UniversalLib.git'
+					}
+					issueManagement {
+						system 'github'
+						url 'https://github.com/UniversalTeam/UniversalLib/issues'
+					}
+					licenses {
+						license {
+							name 'GPLv3'
+							url 'https://github.com/UniversalTeam/UniversalLib/blob/master/LICENSE'
+							distribution 'repo'
+						}
+					}
+					developers {
+						developer {
+							id 'big_Xplosion'
+							name 'big_Xplosion'
+							roles { role 'developer' }
+						}
+					}
+				}
+			}
+		}
+	}
+}
