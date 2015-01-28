@@ -39,6 +39,14 @@ minecraft {
     version = "${config.version.minecraft}-${config.version.forge}"
     runDir = "run"
     mappings = "snapshot_nodoc_20141130"
+
+	replace '@VERSION@', "${config.version.mod}"
+	if (System.getenv("BUILD_NUMBER") != null) {
+		replace '@BUILD_NUMBER@', System.getenv("BUILD_NUMBER")
+	} else {
+		replace '@BUILD_NUMBER@', "0"
+	}
+	replace '@dev=true@', "dev=false"
 }
 
 jar {
@@ -62,38 +70,40 @@ artifacts {
 
 uploadArchives {
 	repositories {
-		mavenDeployer {
-			repository(url: "file:///var/www/maven/")
-			pom {
-				groupId = "universalteam"
-				version = project.version
-				artifactId = project.archivesBaseName
-				project {
-					name project.archivesBaseName
-					packaging 'jar'
-					description 'UniversalLib'
-					url 'https://github.com/UniversalTeam/UniversalLib'
-					scm {
-						url 'https://github.com/amadornes/Framez'
-						connection 'scm:git:git@github.com:UniversalTeam/UniversalLib.git'
-						developerConnection 'scm:git:git@github.com:UniversalTeam/UniversalLib.git'
-					}
-					issueManagement {
-						system 'github'
-						url 'https://github.com/UniversalTeam/UniversalLib/issues'
-					}
-					licenses {
-						license {
-							name 'GPLv3'
-							url 'https://github.com/UniversalTeam/UniversalLib/blob/master/LICENSE'
-							distribution 'repo'
+		if (System.getenv().BUILD_NUMBER != null) {
+			mavenDeployer {
+				repository(url: "file:///var/www/maven/")
+				pom {
+					groupId = "universalteam"
+					version = project.version
+					artifactId = project.archivesBaseName
+					project {
+						name project.archivesBaseName
+						packaging 'jar'
+						description 'UniversalLib'
+						url 'https://github.com/UniversalTeam/UniversalLib'
+						scm {
+							url 'https://github.com/UniversalTeam/UniversalLib'
+							connection 'scm:git:git@github.com:UniversalTeam/UniversalLib.git'
+							developerConnection 'scm:git:git@github.com:UniversalTeam/UniversalLib.git'
 						}
-					}
-					developers {
-						developer {
-							id 'big_Xplosion'
-							name 'big_Xplosion'
-							roles { role 'developer' }
+						issueManagement {
+							system 'github'
+							url 'https://github.com/UniversalTeam/UniversalLib/issues'
+						}
+						licenses {
+							license {
+								name 'GPLv3'
+								url 'https://github.com/UniversalTeam/UniversalLib/blob/master/LICENSE'
+								distribution 'repo'
+							}
+						}
+						developers {
+							developer {
+								id 'big_Xplosion'
+								name 'big_Xplosion'
+								roles { role 'developer' }
+							}
 						}
 					}
 				}
